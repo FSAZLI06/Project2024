@@ -1,21 +1,70 @@
+#standard Library Imports
+import os
+import time 
 from app import app
-from flask import render_template, redirect, request, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import secure_filename
+from flask import render_template, redirect, request, url_for, flash
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-import os
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
+import smtplib
+import ssl
+from flask_mail import Mail, Message
+
+
+# Image Configurations
+app.config['UPLOAD_FOLDER'] = os.path.join(
+    os.getcwd(), 'irds', 'app', 'static', 'images'
+)
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'jfif'}
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, "birds.db")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'correcthorsebatterystaple'
+
+
 WTF_CSRF_ENABLED = True
 WTF_CSRF_SECRET_KEY = 'sup3r_secr3t_passw3rd'
+
+
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 bcrypt.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
+app.config.update(
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT=587,
+    MAIL_USERNAME='faidhi937@gmail.com',
+    MAIL_PASSWORD='shmg muqb exum czio',  # app password on non-personal email
+    MAIL_USE_TLS=True,
+    MAIL_USE_SSL=False
+)
+
+mail = Mail(app)
+
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def send_reset_email(user):
+    token = generate_reset_token(user)
+    msg = Message('Password Reset Request',
+                  sender='noreply@example.com',
+                  recipients=[user.email])
+    msg.body = f''' click link below:
+{url_for('reset_token', token=token, _external=True)}
+
+If you did not make this request, please ignore this email and no changes will be made.
+'''
+    mail.send(msg)  # Flask-Mail's send method is used here
 
 # Import models and forms after app and extensions are initialized
 from flask_login import UserMixin
