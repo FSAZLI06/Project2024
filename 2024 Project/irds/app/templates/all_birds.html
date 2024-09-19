@@ -5,9 +5,11 @@
     <div class="bird-grid">
         {% for bird in allbirds %}
         <div class="bird-box">
-            <img src="{{bird.photo}}" alt="{{bird.name}} Image">
-            <a href="/birds/{{bird.id}}">{{bird.name}}</a>
+            <!-- wraps the image in an anchor tag so that it can be clickable -->
+            <a href="/birds/{{bird.id}}">
+                <img src="{{bird.photo}}" alt="{{bird.name}} Image">
             </a>
+            <a href="/birds/{{bird.id}}">{{bird.name}}</a>
         </div>
         {% endfor %}
     </div>
