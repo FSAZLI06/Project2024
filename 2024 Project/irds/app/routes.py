@@ -1,17 +1,22 @@
-#standard Library Imports
+# standard Library Imports
 import os
 import time 
-from app import app
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
-from flask import render_template, redirect, request, url_for, flash
-from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash
 import smtplib
 import ssl
+
+# flask stuff 
+from flask import render_template, redirect, request, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from flask_mail import Mail, Message
+
+# werkzeug imports
+from werkzeug.utils import secure_filename
+from werkzeug.security import generate_password_hash
+
+# App instance import
+from app import app
 
 
 # Image Configurations
@@ -67,9 +72,9 @@ If you did not make this request, please ignore this email and no changes will b
     mail.send(msg)  # Flask-Mail's send method is used here
 
 # Import models and forms after app and extensions are initialized
-from flask_login import UserMixin
 from app.models import User, db
 from app.forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordForm
+
 
 @login_manager.user_loader
 def load_user(user_id):
